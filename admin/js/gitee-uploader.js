@@ -1,7 +1,7 @@
 /**
- * SM.MS ?????? + Gitee ?????
- * - ???? ? SM.MS(?? token,????,??????)
- * - ???? ? Gitee ?? data/portfolio.json
+ * SM.MS 免费图床上传 + Gitee 数据持久化
+ * - 图片上传 → SM.MS（无需 token，公开直链，全世界可访问）
+ * - 数据保存 → Gitee 仓库 data/portfolio.json
  */
 
 (function () {
@@ -13,7 +13,7 @@
         branch: 'master'
     };
 
-    // ?? Gitee Token(???????? Gitee)?????????????????????
+    // ── Gitee Token（仅用于保存数据到 Gitee）─────────────────────
     function getToken() {
         return localStorage.getItem('giteeToken') || '';
     }
@@ -26,7 +26,7 @@
         return !!getToken();
     }
 
-    // ?? ????? SM.MS(?? token,????)??????????????????
+    // ── 上传图片到 SM.MS（无需 token，公开直链）──────────────────
     async function upload(file) {
         const formData = new FormData();
         formData.append('smfile', file);
@@ -39,18 +39,18 @@
             const data = await res.json();
 
             if (data.success) {
-                return { success: true, url: data.data.url, message: '????' };
+                return { success: true, url: data.data.url, message: '上传成功' };
             }
             if (data.code === 'image_repeated') {
-                return { success: true, url: data.images, message: '?????' };
+                return { success: true, url: data.images, message: '图片已存在' };
             }
-            return { success: false, url: '', message: data.message || '????' };
+            return { success: false, url: '', message: data.message || '上传失败' };
         } catch (err) {
             return { success: false, url: '', message: err.message };
         }
     }
 
-    // ?? ???? ??????????????????????????????????????????????????
+    // ── 批量上传 ──────────────────────────────────────────────────
     async function uploadMultiple(files, onProgress) {
         const results = [];
         for (let i = 0; i < files.length; i++) {
@@ -61,7 +61,7 @@
         return results;
     }
 
-    // ?? ?? Gitee ?? portfolio.json ???????????????????????????
+    // ── 读取 Gitee 上的 portfolio.json ───────────────────────────
     async function loadRemoteData() {
         try {
             const url = `https://gitee.com/${GITEE.username}/${GITEE.repo}/raw/${GITEE.branch}/data/portfolio.json?t=${Date.now()}`;
@@ -73,15 +73,15 @@
         }
     }
 
-    // ?? ?? portfolio.json ? Gitee ????????????????????????????
+    // ── 保存 portfolio.json 到 Gitee ────────────────────────────
     async function saveRemoteData(portfolioData) {
         const token = getToken();
-        if (!token) return { success: false, message: '???? Gitee ??(??????)' };
+        if (!token) return { success: false, message: '请先填写 Gitee 令牌（用于保存数据）' };
 
         try {
             const content = btoa(unescape(encodeURIComponent(JSON.stringify(portfolioData, null, 2))));
 
-            // ???? SHA
+            // 获取现有 SHA
             let sha = null;
             try {
                 const check = await fetch(
@@ -111,8 +111,8 @@
             );
 
             const data = await res.json();
-            if (data.content) return { success: true, message: '???? Gitee' };
-            return { success: false, message: data.message || '????' };
+            if (data.content) return { success: true, message: '已保存到 Gitee' };
+            return { success: false, message: data.message || '保存失败' };
         } catch (err) {
             return { success: false, message: err.message };
         }
