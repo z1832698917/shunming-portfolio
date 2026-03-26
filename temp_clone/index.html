@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顺明的作品集 | Shunming Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Dynamic Background Layer -->
+    <div class="dynamic-bg" id="dynamicBg"></div>
+    
+    <!-- Navigation -->
+    <nav class="main-nav" id="mainNav">
+        <div class="nav-logo">
+            <span class="logo-text">顺明</span>
+            <span class="logo-sub">Portfolio</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#photography" class="nav-link active">摄影</a></li>
+            <li><a href="#ecommerce" class="nav-link">跨境电商</a></li>
+            <li><a href="#typesetting" class="nav-link">排版作品</a></li>
+        </ul>
+        <button class="nav-admin-btn" onclick="location.href='admin/'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+            管理
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">顺明</span>
+                <span class="title-sub">的作品集</span>
+            </h1>
+            <p class="hero-subtitle">Photography · E-commerce · Typesetting</p>
+            <div class="scroll-indicator">
+                <span>向下滚动探索</span>
+                <div class="scroll-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M19 12l-7 7-7-7"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Photography Section -->
+    <section class="portfolio-section" id="photography" data-category="photography">
+        <div class="section-header">
+            <h2 class="section-title">摄影</h2>
+            <p class="section-desc">光影之间，定格瞬间之美</p>
+        </div>
+        <div class="masonry-grid" id="photographyGrid">
+            <!-- Photography items will be dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- E-commerce Section -->
+    <section class="portfolio-section" id="ecommerce" data-category="ecommerce">
+        <div class="section-header">
+            <h2 class="section-title">跨境电商</h2>
+            <p class="section-desc">连接全球，创造价值</p>
+        </div>
+        <div class="masonry-grid" id="ecommerceGrid">
+            <!-- E-commerce items will be dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Typesetting Section -->
+    <section class="portfolio-section" id="typesetting" data-category="typesetting">
+        <div class="section-header">
+            <h2 class="section-title">排版作品</h2>
+            <p class="section-desc">字里行间，秩序与美学</p>
+        </div>
+        <div class="masonry-grid" id="typesettingGrid">
+            <!-- Typesetting items will be dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p class="copyright">© 2026 顺明的作品集. All rights reserved.</p>
+            <p class="footer-tagline">Crafted with passion</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+        <div class="lightbox-content">
+            <img src="" alt="" id="lightboxImg" class="lightbox-img">
+        </div>
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+    </div>
+
+    <!-- Data Configuration -->
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- 数据同步脚本 -->
+    <script>
+    (function() {
+        // 检查是否有数据更新
+        function checkForUpdates() {
+            // 保存的数据会覆盖默认数据，所以PORTFOLIO_DATA已经是最新
+            // 但如果需要确认，可以检查更新时间戳
+            var lastUpdate = localStorage.getItem('portfolioDataUpdateTime');
+            if (lastUpdate) {
+                console.log('📅 最后更新时间:', new Date(parseInt(lastUpdate)).toLocaleString());
+            }
+        }
+        
+        // 监听localStorage变化（跨页面通信）
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'portfolioData' && e.newValue) {
+                try {
+                    var newData = JSON.parse(e.newValue);
+                    // 触发自定义事件通知main.js
+                    window.dispatchEvent(new CustomEvent('portfolioDataChanged', {
+                        detail: newData
+                    }));
+                    console.log('📝 检测到数据更新！');
+                    showSyncNotification();
+                } catch (err) {
+                    console.error('数据同步失败:', err);
+                }
+            }
+        });
+        
+        // 显示同步通知
+        function showSyncNotification() {
+            var existing = document.querySelector('.sync-notification');
+            if (existing) existing.remove();
+            
+            var notification = document.createElement('div');
+            notification.className = 'sync-notification';
+            notification.innerHTML = '<span style="color: white;">✅ 内容已更新，刷新查看</span>';
+            notification.style.cssText = [
+                'position: fixed',
+                'bottom: 2rem',
+                'right: 2rem',
+                'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'color: white',
+                'padding: 1rem 1.5rem',
+                'border-radius: 12px',
+                'font-size: 0.9rem',
+                'z-index: 99999',
+                'box-shadow: 0 10px 40px rgba(0,0,0,0.2)',
+                'animation: slideUp 0.3s ease',
+                'cursor: pointer'
+            ].join(';');
+            
+            notification.onclick = function() {
+                location.reload();
+            };
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后自动消失
+            setTimeout(function() {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.3s';
+                    setTimeout(function() {
+                        if (notification.parentNode) notification.remove();
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        // 页面加载时检查
+        checkForUpdates();
+    })();
+    </script>
+    
+    <style>
+    @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    </style>
+</body>
+</html>

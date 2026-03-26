@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诊断测试</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #1a1a2e; color: #fff; }
+  .card { background: #16213e; padding: 16px; margin: 10px 0; border-radius: 8px; }
+  .ok { color: #4ade80; }
+  .fail { color: #f87171; }
+  .warn { color: #fbbf24; }
+  img { max-width: 200px; max-height: 150px; margin: 8px; border: 2px solid #333; }
+  h3 { margin: 0 0 10px; }
+</style>
+</head>
+<body>
+<h2>📊 网站诊断报告</h2>
+<div id="results"></div>
+<script>
+const results = document.getElementById('results');
+function log(msg, type) {
+  const div = document.createElement('div');
+  div.className = 'card ' + type;
+  div.innerHTML = msg;
+  results.appendChild(div);
+}
+function done() {
+  log('<b>✅ 诊断完成</b>');
+}
+
+// 1. 测试 data.json 加载
+fetch('https://gitee.com/z1832698917/aming-web/raw/master/data/portfolio.json?t=' + Date.now())
+  .then(r => { if(r.ok) return r.json(); throw new Error('HTTP '+r.status); })
+  .then(data => {
+    log(`<b>1. Gitee 数据加载</b> <span class="ok">✅ 成功</span><br>摄影作品: ${data.photography.length} | 电商: ${data.ecommerce.length} | 排版: ${data.typesetting.length}`);
+    
+    // 2. 测试图片加载
+    const imgs = data.photography.flatMap(p => [p.cover, ...p.images.map(i=>i.url)]);
+    log(`<b>2. 测试 ${imgs.length} 张图片...</b>`);
+    
+    let passed = 0, failed = 0;
+    imgs.forEach((src, i) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => { passed++; renderImg(src, true); check(); };
+      img.onerror = () => { failed++; renderImg(src, false); check(); };
+      img.src = src;
+    });
+    
+    function check() {
+      if (passed + failed < imgs.length) return;
+      if (failed === 0) {
+        log(`<b>3. 图片加载</b> <span class="ok">✅ 全部成功 (${passed}/${imgs.length})</span>`);
+      } else {
+        log(`<b>3. 图片加载</b> <span class="fail">⚠️ ${failed}/${imgs.length} 张失败</span>`);
+        log(`<b>原因分析</b>: Gitee 对某些图片做了限流或风控。建议换用 smms 免费图床上传图片`);
+      }
+      done();
+    }
+  })
+  .catch(e => {
+    log(`<b>1. Gitee 数据加载</b> <span class="fail">❌ 失败: ${e.message}</span><br>→ 可能是 CORS 阻止，前台从 Netlify 访问 Gitee 被拦截`);
+    log(`<b>建议</b>: 在 Gitee 仓库设置 → 服务 → 开启 Gitee Pages（或改用 GitHub Pages）`);
+    done();
+  });
+
+function renderImg(src, ok) {
+  const div = document.createElement('div');
+  div.style.cssText = 'display:inline-block;margin:4px;text-align:center;';
+  div.innerHTML = `<img src="${src}"><br><small style="color:${ok?'#4ade80':'#f87171'}">${ok?'✅':'❌'}</small>`;
+  results.appendChild(div);
+}
+</script>
+</body>
+</html>

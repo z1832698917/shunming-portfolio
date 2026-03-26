@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gitee部署指南 - 一站式解决方案</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+        .subtitle { text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+        
+        .card {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        
+        .step {
+            display: flex;
+            gap: 1rem;
+            margin: 1.2rem 0;
+        }
+        
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content h3 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .step-content p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .url-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            margin: 1rem 0;
+        }
+        
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .workflow-item {
+            background: #f8f9fa;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .workflow-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .workflow-item h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .workflow-item p {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #667eea;
+            margin: 0.5rem 0;
+        }
+        
+        .advantage-list {
+            list-style: none;
+        }
+        
+        .advantage-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .advantage-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .check {
+            color: #4CAF50;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Gitee一站式部署方案</h1>
+        <p class="subtitle">网站 + 图床 + 后台管理 全部在同一个仓库</p>
+        
+        <div class="card">
+            <h2>✨ 这个方案的优势</h2>
+            <ul class="advantage-list">
+                <li><span class="check">✅</span> <strong>一站式管理</strong> - 网站和图片在同一个仓库</li>
+                <li><span class="check">✅</span> <strong>实时同步</strong> - 我修改后，网站自动更新</li>
+                <li><span class="check">✅</span> <strong>国内极速</strong> - Gitee是国内最快的代码托管平台</li>
+                <li><span class="check">✅</span> <strong>后台上传</strong> - 直接在管理后台上传图片到仓库</li>
+                <li><span class="check">✅</span> <strong>免费无限制</strong> - Gitee Pages完全免费</li>
+                <li><span class="check">✅</span> <strong>协作方便</strong> - 我可以随时帮你修改代码</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>📋 部署步骤</h2>
+            
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>注册Gitee账号</h3>
+                    <p>访问 gitee.com 注册账号，国内用户无需翻墙</p>
+                    <a href="https://gitee.com/signup" target="_blank" class="btn">👉 注册Gitee</a>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>创建仓库</h3>
+                    <p>新建一个公开仓库，仓库名可以叫：<code>portfolio</code> 或 <code>shunming-portfolio</code></p>
+                    <div class="highlight">
+                        ⚠️ 仓库必须设为<strong>公开</strong>，否则Gitee Pages无法访问
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>上传网站文件</h3>
+                    <p>把整个 <code>portfolio_project</code> 文件夹里的所有文件上传到仓库</p>
+                    <p style="font-size: 0.85rem; color: #888; margin-top: 0.5rem;">
+                        方法：在仓库页面点击「上传文件」，拖入所有文件，提交
+                    </p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h3>开启Gitee Pages</h3>
+                    <p>进入仓库 → 服务 → Gitee Pages → 选择分支 master → 启动</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <h3>获取网站地址</h3>
+                    <div class="url-box">
+                        https://你的用户名.gitee.io/仓库名
+                    </div>
+                    <p>例如：https://shunming.gitee.io/portfolio</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔄 后续协作流程</h2>
+            
+            <div class="workflow">
+                <div class="workflow-item">
+                    <div class="icon">📤</div>
+                    <h4>后台上传图片</h4>
+                    <p>管理后台直接上传到Gitee仓库</p>
+                </div>
+                <div class="workflow-item">
+                    <div class="icon">🔧</div>
+                    <h4>我修改代码</h4>
+                    <p>你需要改什么，告诉我就行</p>
+                </div>
+                <div class="workflow-item">
+                    <div class="icon">🚀</div>
+                    <h4>自动更新</h4>
+                    <p>Gitee Pages自动部署</p>
+                </div>
+                <div class="workflow-item">
+                    <div class="icon">✅</div>
+                    <h4>访问网站</h4>
+                    <p>刷新即可看到最新内容</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🎁 我能帮你做什么？</h2>
+            
+            <div class="step">
+                <div class="step-num">✓</div>
+                <div class="step-content">
+                    <h3>修改网站代码</h3>
+                    <p>你只需要告诉我：「把标题改成金色」「添加一个新分类」等，我直接修改你的Gitee仓库</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">✓</div>
+                <div class="step-content">
+                    <h3>配置后台上传</h3>
+                    <p>我帮你配置管理后台，让它能直接上传图片到Gitee仓库</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">✓</div>
+                <div class="step-content">
+                    <h3>优化网站性能</h3>
+                    <p>提高加载速度、添加新功能、修改样式等</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white;">🎯 下一步操作</h2>
+            <p style="margin: 1rem 0; opacity: 0.9;">你只需要做：</p>
+            <ol style="padding-left: 1.5rem; line-height: 2;">
+                <li>注册Gitee账号</li>
+                <li>创建公开仓库</li>
+                <li>告诉我你的<strong>用户名</strong>和<strong>仓库名</strong></li>
+            </ol>
+            <p style="margin-top: 1rem; opacity: 0.9;">剩下的我来搞定！</p>
+        </div>
+    </div>
+</body>
+</html>
