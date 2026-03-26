@@ -3,7 +3,6 @@
  */
 (function() {
     'use strict';
-
     var CDN = 'https://cdn.jsdelivr.net/gh/z1832698917/shunming-portfolio@main';
     var DEFAULT_DATA = { photography: [], ecommerce: [], typesetting: [] };
 
