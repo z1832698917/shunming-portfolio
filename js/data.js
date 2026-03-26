@@ -1,5 +1,5 @@
 /**
- * Portfolio Data - ? Gitee ??,????? Gitee,???? SM.MS ??
+ * Portfolio Data - 从 Gitee 读取，数据保存在 Gitee，图片使用 SM.MS 图床
  */
 
 (function () {
@@ -17,7 +17,7 @@
         typesetting: []
     };
 
-    // ? Gitee ???? data/portfolio.json
+    // 从 Gitee 仓库读取 data/portfolio.json
     async function loadFromGitee() {
         try {
             const url = `https://gitee.com/${GITEE.username}/${GITEE.repo}/raw/${GITEE.branch}/data/portfolio.json?t=${Date.now()}`;
@@ -29,7 +29,7 @@
         }
     }
 
-    // ? localStorage ????
+    // 从 localStorage 读取缓存
     function loadFromCache() {
         try {
             const saved = localStorage.getItem('portfolioData');
@@ -39,7 +39,7 @@
         }
     }
 
-    // ???
+    // 初始化
     async function init() {
         window.PORTFOLIO_DATA = loadFromCache() || DEFAULT_DATA;
         window.dispatchEvent(new CustomEvent('portfolioDataReady', { detail: window.PORTFOLIO_DATA }));
