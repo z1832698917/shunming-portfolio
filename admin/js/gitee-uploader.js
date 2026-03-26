@@ -1,6 +1,6 @@
 /**
- * GitHub 作为图床 - 直接上传图片到仓库
- * 图片URL: https://raw.githubusercontent.com/z1832698917/shunming-portfolio/main/images/文件名
+ * GitHub 图序 + jsDelivr CDN 加速
+ * 图片URL: https://cdn.jsdelivr.net/gh/z1832698917/shunming-portfolio@main/images/文件名
  */
 (function () {
     'use strict';
@@ -9,6 +9,7 @@
         owner: 'z1832698917',
         repo: 'shunming-portfolio',
         branch: 'main',
+        cdn: 'https://cdn.jsdelivr.net/gh/z1832698917/shunming-portfolio@main',
         imagesPath: 'images'
     };
 
@@ -29,11 +30,6 @@
         return !!getToken();
     }
 
-    function isGiteeConfigured() {
-        return !!localStorage.getItem('giteeToken');
-    }
-
-    // ── 上传图片到 GitHub ─────────────────────────────────────────
     async function upload(file) {
         var token = getToken();
         if (!token) {
@@ -42,13 +38,12 @@
 
         var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
         var filename = GITHUB.imagesPath + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        var rawUrl = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/' + filename;
 
         return new Promise(function(resolve) {
             var reader = new FileReader();
             reader.onload = function(e) {
                 var base64 = e.target.result.split(',')[1];
-
-                // 先获取当前 SHA
                 fetch(
                     'https://api.github.com/repos/' + GITHUB.owner + '/' + GITHUB.repo + '/contents/' + filename,
                     { headers: { 'Authorization': 'token ' + token } }
@@ -73,8 +68,8 @@
                     ).then(function(r) { return r.json(); })
                     .then(function(data) {
                         if (data.content && data.content.download_url) {
-                            // 使用 raw.githubusercontent.com URL
-                            var url = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/' + filename;
+                            // Use CDN URL for fast loading
+                            var url = GITHUB.cdn + '/' + filename;
                             resolve({ success: true, url: url, message: '上传成功' });
                         } else {
                             resolve({ success: false, url: '', message: data.message || '上传失败' });
@@ -95,7 +90,6 @@
         });
     }
 
-    // ── 批量上传 ──────────────────────────────────────────────────
     async function uploadMultiple(files, onProgress) {
         var results = [];
         for (var i = 0; i < files.length; i++) {
@@ -107,22 +101,18 @@
         return results;
     }
 
-    // ── 读取 portfolio.json ───────────────────────────────────────
     async function loadRemoteData() {
         try {
-            var url = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/data/portfolio.json?t=' + Date.now();
+            var url = GITHUB.cdn + '/data/portfolio.json?t=' + Date.now();
             var res = await fetch(url);
             if (!res.ok) return null;
             return await res.json();
-        } catch (e) {
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
-    // ── 保存 portfolio.json ─────────────────────────────────────────
     async function saveRemoteData(portfolioData) {
         var token = getToken();
-        if (!token) return { success: false, message: '请先填写 GitHub 令牌（用于保存数据）' };
+        if (!token) return { success: false, message: '请先填写 GitHub 令牌' };
 
         try {
             var content = btoa(unescape(encodeURIComponent(JSON.stringify(portfolioData, null, 2))));
