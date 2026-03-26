@@ -1,21 +1,15 @@
 /**
- * Portfolio Data - 从 GitHub 读取，本地 localStorage 作为缓存
+ * Portfolio Data - 从 jsDelivr CDN 读取，本地缓存作备份
  */
-
 (function() {
     'use strict';
 
-    var GITHUB = {
-        owner: 'z1832698917',
-        repo: 'shunming-portfolio',
-        branch: 'main'
-    };
-
+    var CDN = 'https://cdn.jsdelivr.net/gh/z1832698917/shunming-portfolio@main';
     var DEFAULT_DATA = { photography: [], ecommerce: [], typesetting: [] };
 
-    async function loadFromGitHub() {
+    async function loadFromCDN() {
         try {
-            var url = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/data/portfolio.json?t=' + Date.now();
+            var url = CDN + '/data/portfolio.json?t=' + Date.now();
             var res = await fetch(url);
             if (!res.ok) return null;
             return await res.json();
@@ -32,7 +26,7 @@
     async function init() {
         window.PORTFOLIO_DATA = loadFromCache() || DEFAULT_DATA;
         window.dispatchEvent(new CustomEvent('portfolioDataReady', { detail: window.PORTFOLIO_DATA }));
-        var remote = await loadFromGitHub();
+        var remote = await loadFromCDN();
         if (remote) {
             window.PORTFOLIO_DATA = remote;
             localStorage.setItem('portfolioData', JSON.stringify(remote));
@@ -41,7 +35,7 @@
     }
 
     window.refreshPortfolioData = async function() {
-        var remote = await loadFromGitHub();
+        var remote = await loadFromCDN();
         if (remote) {
             window.PORTFOLIO_DATA = remote;
             localStorage.setItem('portfolioData', JSON.stringify(remote));
