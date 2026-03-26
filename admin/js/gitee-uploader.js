@@ -1,76 +1,116 @@
 /**
- * SM.MS 免费图床上传 + GitHub 数据持久化
+ * GitHub 作为图床 - 直接上传图片到仓库
+ * 图片URL: https://raw.githubusercontent.com/z1832698917/shunming-portfolio/main/images/文件名
  */
-
 (function () {
     'use strict';
 
-    var GITEE = {
-        username: 'z1832698917',
+    var GITHUB = {
+        owner: 'z1832698917',
         repo: 'shunming-portfolio',
-        branch: 'main'
+        branch: 'main',
+        imagesPath: 'images'
     };
 
+    var _token = '';
+
     function getToken() {
-        return localStorage.getItem('giteeToken') || '';
+        if (_token) return _token;
+        _token = localStorage.getItem('githubToken') || '';
+        return _token;
     }
 
     function saveToken(token) {
-        localStorage.setItem('giteeToken', token.trim());
+        _token = token.trim();
+        localStorage.setItem('githubToken', _token);
     }
 
     function isConfigured() {
         return !!getToken();
     }
 
-    function fileToBase64(file) {
-        return new Promise(function(resolve, reject) {
+    function isGiteeConfigured() {
+        return !!localStorage.getItem('giteeToken');
+    }
+
+    // ── 上传图片到 GitHub ─────────────────────────────────────────
+    async function upload(file) {
+        var token = getToken();
+        if (!token) {
+            return { success: false, url: '', message: '请先填写 GitHub 令牌' };
+        }
+
+        var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        var filename = GITHUB.imagesPath + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+
+        return new Promise(function(resolve) {
             var reader = new FileReader();
-            reader.onload = function() { resolve(reader.result.split(',')[1]); };
-            reader.onerror = reject;
+            reader.onload = function(e) {
+                var base64 = e.target.result.split(',')[1];
+
+                // 先获取当前 SHA
+                fetch(
+                    'https://api.github.com/repos/' + GITHUB.owner + '/' + GITHUB.repo + '/contents/' + filename,
+                    { headers: { 'Authorization': 'token ' + token } }
+                ).then(function(r) { return r.ok ? r.json() : null; })
+                .then(function(existing) {
+                    var body = {
+                        message: 'Upload image: ' + file.name,
+                        content: base64
+                    };
+                    if (existing && existing.sha) body.sha = existing.sha;
+
+                    fetch(
+                        'https://api.github.com/repos/' + GITHUB.owner + '/' + GITHUB.repo + '/contents/' + filename,
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': 'token ' + token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(body)
+                        }
+                    ).then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.content && data.content.download_url) {
+                            // 使用 raw.githubusercontent.com URL
+                            var url = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/' + filename;
+                            resolve({ success: true, url: url, message: '上传成功' });
+                        } else {
+                            resolve({ success: false, url: '', message: data.message || '上传失败' });
+                        }
+                    })
+                    .catch(function(err) {
+                        resolve({ success: false, url: '', message: err.message });
+                    });
+                })
+                .catch(function(err) {
+                    resolve({ success: false, url: '', message: err.message });
+                });
+            };
+            reader.onerror = function() {
+                resolve({ success: false, url: '', message: '文件读取失败' });
+            };
             reader.readAsDataURL(file);
         });
     }
 
-    // 上传图片到 SM.MS
-    async function upload(file) {
-        var formData = new FormData();
-        formData.append('smfile', file);
-
-        try {
-            var res = await fetch('https://sm.ms/api/v2/upload', {
-                method: 'POST',
-                body: formData
-            });
-            var data = await res.json();
-
-            if (data.success) {
-                return { success: true, url: data.data.url, message: '上传成功' };
-            }
-            if (data.code === 'image_repeated') {
-                return { success: true, url: data.images, message: '图片已存在' };
-            }
-            return { success: false, url: '', message: data.message || '上传失败' };
-        } catch (err) {
-            return { success: false, url: '', message: err.message };
-        }
-    }
-
+    // ── 批量上传 ──────────────────────────────────────────────────
     async function uploadMultiple(files, onProgress) {
         var results = [];
         for (var i = 0; i < files.length; i++) {
             if (onProgress) onProgress(i + 1, files.length, files[i].name);
             var r = await upload(files[i]);
             results.push({ name: files[i].name, success: r.success, url: r.url, message: r.message });
-            if (i < files.length - 1) await new Promise(function(resolve) { setTimeout(resolve, 500); });
+            if (i < files.length - 1) await new Promise(function(res) { setTimeout(res, 800); });
         }
         return results;
     }
 
-    // 读取 GitHub 上的 portfolio.json
+    // ── 读取 portfolio.json ───────────────────────────────────────
     async function loadRemoteData() {
         try {
-            var url = 'https://raw.githubusercontent.com/' + GITEE.username + '/' + GITEE.repo + '/' + GITEE.branch + '/data/portfolio.json?t=' + Date.now();
+            var url = 'https://raw.githubusercontent.com/' + GITHUB.owner + '/' + GITHUB.repo + '/' + GITHUB.branch + '/data/portfolio.json?t=' + Date.now();
             var res = await fetch(url);
             if (!res.ok) return null;
             return await res.json();
@@ -79,19 +119,18 @@
         }
     }
 
-    // 保存 portfolio.json 到 GitHub
+    // ── 保存 portfolio.json ─────────────────────────────────────────
     async function saveRemoteData(portfolioData) {
         var token = getToken();
-        if (!token) return { success: false, message: '请先填写 GitHub 令牌' };
+        if (!token) return { success: false, message: '请先填写 GitHub 令牌（用于保存数据）' };
 
         try {
             var content = btoa(unescape(encodeURIComponent(JSON.stringify(portfolioData, null, 2))));
 
-            // 获取现有 SHA
             var sha = null;
             try {
                 var check = await fetch(
-                    'https://api.github.com/repos/' + GITEE.username + '/' + GITEE.repo + '/contents/data/portfolio.json',
+                    'https://api.github.com/repos/' + GITHUB.owner + '/' + GITHUB.repo + '/contents/data/portfolio.json',
                     { headers: { 'Authorization': 'token ' + token } }
                 );
                 if (check.ok) {
@@ -103,19 +142,21 @@
             var body = {
                 message: 'Update portfolio data',
                 content: content,
-                branch: GITEE.branch
+                branch: GITHUB.branch
             };
             if (sha) body.sha = sha;
 
-            var apiUrl = 'https://api.github.com/repos/' + GITEE.username + '/' + GITEE.repo + '/contents/data/portfolio.json';
-            var res = await fetch(apiUrl, {
-                method: sha ? 'PUT' : 'POST',
-                headers: {
-                    'Authorization': 'token ' + token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
+            var res = await fetch(
+                'https://api.github.com/repos/' + GITHUB.owner + '/' + GITHUB.repo + '/contents/data/portfolio.json',
+                {
+                    method: sha ? 'PUT' : 'POST',
+                    headers: {
+                        'Authorization': 'token ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
 
             var data = await res.json();
             if (data.content) return { success: true, message: '已保存到 GitHub' };
@@ -133,6 +174,6 @@
         saveToken: saveToken,
         loadRemoteData: loadRemoteData,
         saveRemoteData: saveRemoteData,
-        config: GITEE
+        config: GITHUB
     };
 })();
