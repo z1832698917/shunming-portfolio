@@ -1,5 +1,5 @@
 /**
- * ?????? - Main JavaScript v2.0
+ * 顺明的作品集 - Main JavaScript v2.0
  * Premium interactive portfolio with stunning animations
  */
 
@@ -235,20 +235,20 @@
         cover.className = 'card-cover';
 
         const img = document.createElement('img');
-        // ?????????
+        // 使用默认的占位图片
         const defaultImg = `https://picsum.photos/seed/${item.id}/800/1000`;
         img.src = item.cover || defaultImg;
         img.alt = item.title;
         img.loading = 'lazy';
         img.className = 'img-loading';
         
-        // ????
+        // 加载成功
         img.onload = () => img.classList.remove('img-loading');
         
-        // ?????????????
+        // 加载失败时使用渐变色占位图
         img.onerror = function() {
             img.classList.remove('img-loading');
-            // ????????
+            // 使用渐变色占位图
             const color = item.images && item.images[0] && item.images[0].color 
                 ? item.images[0].color.replace('#', '') 
                 : '667eea';
@@ -271,7 +271,7 @@
         info.className = 'card-info';
         info.innerHTML = `
             <h3 class="card-title">${item.title}</h3>
-            <span class="card-count">${item.images.length} ????/span>
+            <span class="card-count">${item.images.length} 张作�?/span>
         `;
 
         card.appendChild(cover);
@@ -589,10 +589,10 @@
     // Initialize
     // ========================================
     function init() {
-        // Render portfolio(????????)
+        // Render portfolio（用缓存数据先渲染）
         renderPortfolio();
 
-        // ? Gitee ???????,????
+        // 当 Gitee 数据加载完毕后，重新渲染
         window.addEventListener('portfolioDataReady', () => renderPortfolio());
         window.addEventListener('portfolioDataUpdated', () => renderPortfolio());
 
